@@ -1,21 +1,24 @@
-var passwd = require('etc-passwd');
+var posix = require('posix');
 var async = require('async');
 var auth = exports;
 
 auth.user_in_group = function(user, group, callback) {
-  passwd.getGroup({'groupname': group}, function(err, group_info) {
-    if (err) { //if error because user/group doesnt exist
-      callback(false)
-    } else if (group_info['users'].indexOf(user) >= 0) {
-      // if user exists in returned group array
-      callback(true);
-    } else {
-      // check if user's primary group is group
-      // because a user is typically not part of the groups array result
-      passwd.getUser({'username':user}, function(err, user_info) {
-        callback( (err ? false : group_info['gid'] == user_info['gid']) )
-      });
-    }
-  })
-}
+  var group_info, user_info;
+  try {
+    group_info = posix.getgrnam(group);
 
+    if (group_info['members'].indexOf(user) >= 0)
+      callback(true); //if user listed in getgrnam's grouplist
+    else {
+      user_info = posix.getpwnam(user);
+
+      if (group_info['gid'] == user_info['gid']) {
+        callback(true); //if user's primary group is matching
+      } else {
+        callback(false);
+      }
+    }
+  } catch (e) {
+    callback(false);
+  }
+}

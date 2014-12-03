@@ -1,4 +1,3 @@
-var passwd = require('etc-passwd');
 var async = require('async');
 var auth = require('../auth');
 var test = exports;
@@ -34,7 +33,7 @@ test.user_in_group = function(test) {
         test.ok(in_group);
         cb();
       })
-    }   
+    } 
   ], function(err, results) {
     test.done();
   })
