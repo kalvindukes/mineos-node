@@ -388,6 +388,34 @@ mineos.mc = function(server_name, base_dir) {
     })  
   }
 
+  self.permission_list = function(user, callback) {
+    callback({
+      'archive': {
+        'view': true,
+        'create': true,
+        'restore': true,
+        'delete': true
+      },
+      'backup': {
+        'view': true,
+        'create': true,
+        'restore': true,
+        'delete': true
+      },
+      'servers': {
+        'view': true,
+        'delete': true
+      },
+      'config': {
+        'read': true,
+        'write': true
+      },
+      'operation': {
+        'start': true
+      }
+    })
+  }
+
   return self;
 }
 

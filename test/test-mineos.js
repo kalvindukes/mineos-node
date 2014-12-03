@@ -25,7 +25,7 @@ test.tearDown = function(callback) {
   callback();
 }
 
-test.server_list = function (test) {
+/*test.server_list = function (test) {
   var servers = mineos.server_list(BASE_DIR);
   var instance = new mineos.mc('testing', BASE_DIR);
 
@@ -725,6 +725,78 @@ test.memory = function(test) {
       instance.kill(function(err) {
         test.ifError(err);
         setTimeout(function() { callback(err) }, 1000);
+      })
+    }
+  ], function(err, results) {
+    test.done();
+  })  
+}*/
+
+test.permission_list = function(test) {
+  var server_name = 'testing';
+  var instance = new mineos.mc(server_name, BASE_DIR);
+
+  async.series([
+    function(callback) {
+      instance.create(OWNER_CREDS, function(err) {
+        test.ifError(err);
+        callback(err);
+      })
+    },
+    function(callback) {
+      instance.permission_list('mc', function(permissions) {
+        test.ok('archive' in permissions);
+        test.ok('view' in permissions['archive']);
+        test.ok('create' in permissions['archive']);
+        test.ok('restore' in permissions['archive']);
+        test.ok('delete' in permissions['archive']);
+
+        test.ok('backup' in permissions);
+        test.ok('view' in permissions['backup']);
+        test.ok('create' in permissions['backup']);
+        test.ok('restore' in permissions['backup']);
+        test.ok('delete' in permissions['backup']);
+
+        test.ok('servers' in permissions);
+        test.ok('view' in permissions['servers']);
+        test.ok('delete' in permissions['servers']);
+
+        test.ok('config' in permissions);
+        test.ok('read' in permissions['config']);
+        test.ok('write' in permissions['config']);
+
+        test.ok('operation' in permissions);
+        test.ok('start' in permissions['operation']);
+
+        callback();
+      })
+    },
+    function(callback) {
+      instance.permission_list('nobody', function(permissions) {
+        test.equal('archive' in permissions, false);
+        test.equal('view' in permissions['archive'], false);
+        test.equal('create' in permissions['archive'], false);
+        test.equal('restore' in permissions['archive'], false);
+        test.equal('delete' in permissions['archive'], false);
+
+        test.equal('backup' in permissions, false);
+        test.equal('view' in permissions['backup'], false);
+        test.equal('create' in permissions['backup'], false);
+        test.equal('restore' in permissions['backup'], false);
+        test.equal('delete' in permissions['backup'], false);
+
+        test.equal('servers' in permissions, false);
+        test.equal('view' in permissions['servers'], false);
+        test.equal('delete' in permissions['servers'], false);
+
+        test.equal('config' in permissions, false);
+        test.equal('read' in permissions['config'], false);
+        test.equal('write' in permissions['config'], false);
+
+        test.equal('operation' in permissions, false);
+        test.equal('start' in permissions['operation'], false);
+
+        callback();
       })
     }
   ], function(err, results) {
