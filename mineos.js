@@ -407,10 +407,8 @@ mineos.mc = function(server_name, base_dir) {
         })
       },
       function(in_group, cb) {
-        ['view', 'delete', 'start'].forEach(function(op) {
-          if (in_group)
-            perms['servers'][op] = true;
-        })
+        if (in_group)
+          ['view', 'delete', 'start'].forEach(function(op) { perms['servers'][op] = true })
         cb();
       },
 
@@ -422,10 +420,8 @@ mineos.mc = function(server_name, base_dir) {
         })
       },
       function(in_group, cb) {
-        ['view', 'create', 'restore', 'delete'].forEach(function(op) {
-          if (in_group)
-            perms['backup'][op] = true;
-        })
+        if (in_group)
+          ['view', 'create', 'restore', 'delete'].forEach(function(op) { perms['backup'][op] = true })
         cb();
       },
 
@@ -437,10 +433,8 @@ mineos.mc = function(server_name, base_dir) {
         })
       },
       function(in_group, cb) {
-         ['view', 'create', 'restore', 'delete'].forEach(function(op) {
-          if (in_group)
-            perms['archive'][op] = true;
-        })
+        if (in_group)
+          ['view', 'create', 'restore', 'delete'].forEach(function(op) { perms['archive'][op] = true })
         cb();
       },
 
@@ -452,10 +446,8 @@ mineos.mc = function(server_name, base_dir) {
         })
       },
       function(in_group, cb) {
-         ['read', 'write'].forEach(function(op) {
-          if (in_group)
-            perms['config'][op] = true;
-        })
+        if (in_group)
+          ['read', 'write'].forEach(function(op) { perms['config'][op] = true })
         cb();
       },
     ], function(err, result) {
