@@ -389,30 +389,77 @@ mineos.mc = function(server_name, base_dir) {
   }
 
   self.permission_list = function(user, callback) {
-    callback({
-      'archive': {
-        'view': true,
-        'create': true,
-        'restore': true,
-        'delete': true
+    var auth = require('./auth');
+
+    var perms = {
+      'archive': {},
+      'backup': {},
+      'servers': {},
+      'config': {}
+    }
+
+    async.waterfall([
+      // cwd functions
+      function(cb) { auth.get_group_owner(self.env['cwd'], cb) },
+      function(owner, cb) {
+        auth.user_in_group(user, owner, function(in_group) {
+          cb(null, in_group) 
+        })
       },
-      'backup': {
-        'view': true,
-        'create': true,
-        'restore': true,
-        'delete': true
+      function(in_group, cb) {
+        ['view', 'delete', 'start'].forEach(function(op) {
+          if (in_group)
+            perms['servers'][op] = true;
+        })
+        cb();
       },
-      'servers': {
-        'view': true,
-        'delete': true
+
+      // bwd functions
+      function(cb) { auth.get_group_owner(self.env['bwd'], cb) },
+      function(owner, cb) {
+        auth.user_in_group(user, owner, function(in_group) {
+          cb(null, in_group) 
+        })
       },
-      'config': {
-        'read': true,
-        'write': true
+      function(in_group, cb) {
+        ['view', 'create', 'restore', 'delete'].forEach(function(op) {
+          if (in_group)
+            perms['backup'][op] = true;
+        })
+        cb();
       },
-      'operation': {
-        'start': true
-      }
+
+      // awd functions
+      function(cb) { auth.get_group_owner(self.env['awd'], cb) },
+      function(owner, cb) {
+        auth.user_in_group(user, owner, function(in_group) {
+          cb(null, in_group) 
+        })
+      },
+      function(in_group, cb) {
+         ['view', 'create', 'restore', 'delete'].forEach(function(op) {
+          if (in_group)
+            perms['archive'][op] = true;
+        })
+        cb();
+      },
+
+      // sp functions
+      function(cb) { auth.get_group_owner(self.env['sp'], cb) },
+      function(owner, cb) {
+        auth.user_in_group(user, owner, function(in_group) {
+          cb(null, in_group) 
+        })
+      },
+      function(in_group, cb) {
+         ['read', 'write'].forEach(function(op) {
+          if (in_group)
+            perms['config'][op] = true;
+        })
+        cb();
+      },
+    ], function(err, result) {
+      callback(perms);
     })
   }
 

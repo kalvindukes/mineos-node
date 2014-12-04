@@ -42,25 +42,25 @@ test.user_in_group = function(test) {
 test.get_group_owner = function(test) {
   async.parallel([
     function(cb) {
-      auth.get_group_owner('/', function(owner) {
+      auth.get_group_owner('/', function(err, owner) {
         test.equal(owner, 'root');
         cb();
       })
     },
     function(cb) {
-      auth.get_group_owner('/root', function(owner) {
+      auth.get_group_owner('/root', function(err, owner) {
         test.equal(owner, 'root');
         cb();
       })
     },
     function(cb) {
-      auth.get_group_owner('/root/', function(owner) {
+      auth.get_group_owner('/root/', function(err, owner) {
         test.equal(owner, 'root');
         cb();
       })
     },
     function(cb) {
-      auth.get_group_owner('/home/mc', function(owner) {
+      auth.get_group_owner('/home/mc', function(err, owner) {
         test.equal(owner, 'mc');
         cb();
       })

@@ -760,41 +760,37 @@ test.permission_list = function(test) {
         test.ok('servers' in permissions);
         test.ok('view' in permissions['servers']);
         test.ok('delete' in permissions['servers']);
+        test.ok('start' in permissions['servers']);
 
         test.ok('config' in permissions);
         test.ok('read' in permissions['config']);
         test.ok('write' in permissions['config']);
-
-        test.ok('operation' in permissions);
-        test.ok('start' in permissions['operation']);
 
         callback();
       })
     },
     function(callback) {
       instance.permission_list('nobody', function(permissions) {
-        test.equal('archive' in permissions, false);
+        test.equal('archive' in permissions, true);
         test.equal('view' in permissions['archive'], false);
         test.equal('create' in permissions['archive'], false);
         test.equal('restore' in permissions['archive'], false);
         test.equal('delete' in permissions['archive'], false);
 
-        test.equal('backup' in permissions, false);
+        test.equal('backup' in permissions, true);
         test.equal('view' in permissions['backup'], false);
         test.equal('create' in permissions['backup'], false);
         test.equal('restore' in permissions['backup'], false);
         test.equal('delete' in permissions['backup'], false);
 
-        test.equal('servers' in permissions, false);
+        test.equal('servers' in permissions, true);
         test.equal('view' in permissions['servers'], false);
         test.equal('delete' in permissions['servers'], false);
+        test.equal('start' in permissions['servers'], false);
 
-        test.equal('config' in permissions, false);
+        test.equal('config' in permissions, true);
         test.equal('read' in permissions['config'], false);
         test.equal('write' in permissions['config'], false);
-
-        test.equal('operation' in permissions, false);
-        test.equal('start' in permissions['operation'], false);
 
         callback();
       })

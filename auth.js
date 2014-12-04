@@ -27,6 +27,6 @@ auth.get_group_owner = function(path, callback) {
   var fs = require('fs-extra');
 
   fs.stat(path, function(err, stat_info){
-    callback(posix.getgrnam(stat_info['gid'])['name']);
+    callback(err, posix.getgrnam(stat_info['gid'])['name']);
   })
 }
