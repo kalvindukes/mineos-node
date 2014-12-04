@@ -38,3 +38,34 @@ test.user_in_group = function(test) {
     test.done();
   })
 }
+
+test.get_group_owner = function(test) {
+  async.parallel([
+    function(cb) {
+      auth.get_group_owner('/', function(owner) {
+        test.equal(owner, 'root');
+        cb();
+      })
+    },
+    function(cb) {
+      auth.get_group_owner('/root', function(owner) {
+        test.equal(owner, 'root');
+        cb();
+      })
+    },
+    function(cb) {
+      auth.get_group_owner('/root/', function(owner) {
+        test.equal(owner, 'root');
+        cb();
+      })
+    },
+    function(cb) {
+      auth.get_group_owner('/home/mc', function(owner) {
+        test.equal(owner, 'mc');
+        cb();
+      })
+    }
+  ], function(err) {
+    test.done();
+  })
+}
