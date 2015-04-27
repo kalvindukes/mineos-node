@@ -9,6 +9,8 @@ var http = require('http').Server(app);
 var io = require('socket.io')(http);
 var userid = require('userid');
 var whoami = require('whoami');
+var auth = require('./auth');
+var httpauth = require('http-auth');
 
 var BASE_DIR = '/var/games/minecraft';
 var response_options = {root: __dirname};
@@ -24,11 +26,9 @@ mineos.dependencies(function(err, binaries) {
 		console.log(binaries);
 	} else {
 		var be = server.backend(BASE_DIR, io, OWNER_CREDS);
+		var authenticator = httpauth.basic({realm: "MineOS Login"}, auth.authenticate_shadow);
 
-		app.get('/', function(req, res){
-			res.sendFile('index.html', response_options);
-		});
-
+		app.use(httpauth.connect(authenticator));
 		app.use('/angular', express.static(__dirname + '/node_modules/angular'));
 		app.use('/angular-translate', express.static(__dirname + '/node_modules/angular-translate/dist'));
 		app.use('/moment', express.static(__dirname + '/node_modules/moment'));
