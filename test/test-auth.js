@@ -27,6 +27,7 @@ test.authenticate_shadow = function(test) {
       })
     }
   ], function(err, results) {
+    test.expect(6);
     test.done();
   })
 }

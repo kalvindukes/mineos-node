@@ -1,22 +1,22 @@
+var async = require('async');
 var auth = exports;
 
 auth.authenticate_shadow = function(user, plaintext, callback) {
   var passwd = require('etc-passwd');
   var hash = require('sha512crypt-node');
 
-  passwd.getShadow({username:user}, function(err, shadow_info) { 
-    if (err) {
-      callback(true, false);
-    } else {
+  async.waterfall([
+    async.apply(passwd.getShadow, {username: user}),
+    function(shadow_info, cb) {
       try {
         var password_parts = shadow_info['password'].split(/\$/);
         var salt = password_parts[2];
         var new_hash = hash.sha512crypt(plaintext, salt);
 
-        callback(err, new_hash == shadow_info['password']);
+        callback(null, new_hash == shadow_info['password']);
       } catch (e) {
         callback(true, false);
       }
     }
-  })
+  ], callback)
 }
