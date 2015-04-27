@@ -13,10 +13,16 @@ auth.authenticate_shadow = function(user, plaintext, callback) {
         var salt = password_parts[2];
         var new_hash = hash.sha512crypt(plaintext, salt);
 
-        callback(null, new_hash == shadow_info['password']);
+        cb(null, new_hash == shadow_info['password']);
       } catch (e) {
-        callback(true, false);
+        cb(true);
       }
     }
-  ], callback)
+  ], function(err, authed) {
+    //while most callbacks return (err, retval), httpauth seems to accept only one: auth success or fail
+    if (err)
+      callback(false);
+    else
+      callback(authed);
+  })
 }
