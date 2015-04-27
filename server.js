@@ -460,7 +460,7 @@ server.backend = function(base_dir, socket_emitter, dir_owner) {
     delete self.servers[server_name];
 
     self.front_end.emit('untrack_server', server_name);
-    console.info('Server removed: {0}'.format(server_name));
+    console.info('Server unloaded: {0}'.format(server_name));
   }
 
   self.shutdown = function() {

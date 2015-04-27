@@ -25,8 +25,8 @@ mineos.dependencies(function(err, binaries) {
 		console.log('MineOS is missing dependencies:', err);
 		console.log(binaries);
 	} else {
-		var be = server.backend(BASE_DIR, io, OWNER_CREDS);
-		var authenticator = httpauth.basic({realm: "MineOS Login"}, auth.authenticate_shadow);
+		var memoized_authenticator = async.memoize(auth.authenticate_shadow);
+		var authenticator = httpauth.basic({realm: "MineOS Login"}, memoized_authenticator);
 
 		app.use(httpauth.connect(authenticator));
 		app.use('/angular', express.static(__dirname + '/node_modules/angular'));
@@ -36,14 +36,16 @@ mineos.dependencies(function(err, binaries) {
 		app.use('/angular-moment-duration-format', express.static(__dirname + '/node_modules/moment-duration-format/lib'));
 		app.use('/admin', express.static(__dirname + '/html'));
 
-		process.on('SIGINT', function() {
-			console.log("Caught interrupt signal; closing webui....");
-			be.shutdown();
-			process.exit();
-		});
+		var LISTEN_PORT = 3000;
+		http.listen(LISTEN_PORT, function(){
+			console.log('listening on *:' + LISTEN_PORT);
+			var be = server.backend(BASE_DIR, io, OWNER_CREDS);
 
-		http.listen(3000, function(){
-			console.log('listening on *:3000');
+			process.on('SIGINT', function() {
+				console.log("Caught interrupt signal; closing webui....");
+				be.shutdown();
+				process.exit();
+			});
 		});
 	}
 })
